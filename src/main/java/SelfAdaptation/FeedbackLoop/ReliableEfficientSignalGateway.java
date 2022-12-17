@@ -15,7 +15,7 @@ import java.util.stream.DoubleStream;
  * A class representing the signal based adaptation approach.
  */
 public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
-    private static Logger LOGGER = Logger.getLogger(ReliableEfficientSignalGateway.class.getName());
+    private static Logger Reliable_Signal_LOGGER = Logger.getLogger(ReliableEfficientSignalGateway.class.getName());
 
     /**
      * Constructs a new instance of the signal based adaptation approach with a given quality of service.
@@ -109,27 +109,15 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
     }
 
     private LoraWanPacket dataBackUP;
-    private Mote moteToAdapt ;
-
-    public void setMoteToAdapt(Mote moteToAdapt) {
-        this.moteToAdapt = moteToAdapt;
-    }
-
-
     OptionalDouble chosenDistance=null;
-
-
-
-    private Mote faultyMote = null;
-
-
 
     @Override
     public void adapt(Mote mote, Gateway dataGateway) {
+
         LinkedList<Double> reliableMinPowerBuffer = new LinkedList<>();
         //Gateway pings mote to check it's status but cannot be actually checked since the mote
         //doesnot have actual ip adress,they have generated UID.
-        //pingMotes(mote, dataGateway);
+      
         /**
          First we check if we have received the message already from all gateways.
          */
@@ -168,19 +156,19 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
      * @return
      */
     private Double getPowerSettingConfigurationOfMote(Mote mote, Gateway dataGateway) {
+        Mote faultyMote = null;
         Long checkMoteUID;
         LinkedList<LoraTransmission> receivedSignals = getGatewayBuffer().getReceivedSignals(mote);
         Double receivedPower = receivedSignals.getFirst().getTransmissionPower();
         for (LoraTransmission transmission : receivedSignals) {
             if (receivedPower < transmission.getTransmissionPower()) {
                 receivedPower = transmission.getTransmissionPower();
-                if (mote.getSensors().contains(MoteSensor.FAULTY)) {
-                    if (transmission.getSender() instanceof NetworkEntity) {
+                if ((mote.getSensors().contains(MoteSensor.FAULTY) && (transmission.getSender() instanceof NetworkEntity))){
                         checkMoteUID = transmission.getSender().getEUI();
-                        if (checkMoteUID == mote.getEUI()) ;
+                        if (checkMoteUID.equals(mote.getEUI()));
                         faultyMote = mote;
-                        LOGGER.log(Level.INFO, "Faulty mote uid" + faultyMote.getEUI());
-                        LOGGER.log(Level.INFO, "Faulty mote contents backupdata" + transmission.getContent());
+                        Reliable_Signal_LOGGER.log(Level.INFO, "Faulty mote uid" + faultyMote.getEUI());
+                        Reliable_Signal_LOGGER.log(Level.INFO, "Faulty mote contents backupdata" + transmission.getContent());
                         setDataBackUP(transmission.getContent());
                         //After data transfer the faulty mote is reset (Here an extensive research could be done
                         // on Self-Healing to fix the faulty mote)
@@ -189,8 +177,8 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
                         //and then disbaled
                         faultyMote.reset();
                         dataGateway.informApplicationServer(faultyMote);
-                       faultyMote.enable(false);
-                    }
+                        faultyMote.enable(false);
+
                 }
             }
         }
@@ -207,16 +195,15 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
          *
          */
         if (mote.getSensors().contains(MoteSensor.NORMAL)) {
-        for(Mote selectWhichMoteToadapt : allMotesToadapt){
-            Double distance = getMoteProbe().getShortestDistanceToGateway(selectWhichMoteToadapt);
-            DoubleStream stream = DoubleStream.of(distance);
-             chosenDistance= stream.min();
-             //We choose the nearest mote and the one which has less request to handle.
-             if(chosenDistance.orElse(-1) <100 && selectWhichMoteToadapt.getNumberOfRequests()<10){
-                 setMoteToAdapt(selectWhichMoteToadapt);
-                 adjustPowerSetting(selectWhichMoteToadapt, getDataBackUP());
-                 informAdatedMoteStatus(selectWhichMoteToadapt,getDataBackUP());
-             }
+            for(Mote selectWhichMoteToadapt : allMotesToadapt){
+                Double distance = getMoteProbe().getShortestDistanceToGateway(selectWhichMoteToadapt);
+                DoubleStream stream = DoubleStream.of(distance);
+                chosenDistance= stream.min();
+                //We choose the nearest mote and the one which has less request to handle.
+                if(chosenDistance.orElse(-1) <100 && selectWhichMoteToadapt.getNumberOfRequests()<10){
+                    adjustPowerSetting(selectWhichMoteToadapt, getDataBackUP());
+                    informAdatedMoteStatus(selectWhichMoteToadapt,getDataBackUP());
+                }
 
 
             }
@@ -224,9 +211,9 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
     }
 
     public void informAdatedMoteStatus(Mote selectWhichMoteToadapt, LoraWanPacket dataBackUP){
-        LOGGER.log(Level.INFO,"Chosen mote to adapt" + selectWhichMoteToadapt.getEUI());
-        LOGGER.log(Level.INFO,"Faulty mote contents backed up" + dataBackUP);
-        LOGGER.log(Level.INFO,"Distance to Gateway" + getMoteProbe().getShortestDistanceToGateway(selectWhichMoteToadapt));
+        Reliable_Signal_LOGGER.log(Level.INFO,"Chosen mote to adapt" + selectWhichMoteToadapt.getEUI());
+        Reliable_Signal_LOGGER.log(Level.INFO,"Faulty mote contents backed up" + dataBackUP);
+        Reliable_Signal_LOGGER.log(Level.INFO,"Distance to Gateway" + getMoteProbe().getShortestDistanceToGateway(selectWhichMoteToadapt));
     }
 
 
@@ -241,7 +228,7 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
 
 
         }
- }
+    }
 
     private void powerSettingAlgorith(Mote moteToAdapt) {
         /**
@@ -255,21 +242,18 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
         /**
          * If the average of the signal strengths is higher than the upper bound, the transmitting power is decreased by 1;
          */
-        if (average > getUpperBound()) {
-            if (getMoteProbe().getPowerSetting(moteToAdapt) > -3) {
+        if ((average > getUpperBound()) && (getMoteProbe().getPowerSetting(moteToAdapt) > -3)){
+
                 getMoteEffector().setPower(moteToAdapt, getMoteProbe().getPowerSetting(moteToAdapt) - 1);
-            }
+
         }
         /**
          * If the average of the signal strengths is lower than the lower bound, the transmitting power is increased by 1;
          */
-        if (average < getLowerBound()) {
-            if (getMoteProbe().getPowerSetting(moteToAdapt) < 14) {
+        if ((average < getLowerBound()) && (getMoteProbe().getPowerSetting(moteToAdapt) < 14)) {
                 getMoteEffector().setPower(moteToAdapt, getMoteProbe().getPowerSetting(moteToAdapt) + 1);
             }
-        }
     }
 
 
 }
-
