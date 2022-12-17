@@ -1,13 +1,9 @@
 package SelfAdaptation.Instrumentation;
 
-import IotDomain.Gateway;
-import IotDomain.LoraTransmission;
-import IotDomain.Mote;
-import IotDomain.NetworkEntity;
+import IotDomain.*;
 import SelfAdaptation.FeedbackLoop.GenericFeedbackLoop;
 
 import java.util.LinkedList;
-import java.util.logging.Logger;
 
 /**
  * A class representing methods for probing.
@@ -17,8 +13,6 @@ public class MoteProbe {
      * A list with feedBackLoops using the probe.
      */
     private GenericFeedbackLoop genericFeedbackLoop;
-    private static Logger LOGGER = Logger.getLogger(MoteProbe.class.getName());
-
 
     /**
      * Constructs a MoteProbe with no FeedBackLoops using it.
@@ -125,7 +119,7 @@ public class MoteProbe {
         Boolean found = false;
         Mote sender = null;
         for (Mote mote :gateway.getEnvironment().getMotes()){
-            if(mote.getEUI() == devEUI){
+            if(mote.getEUI().equals(devEUI)){
                 sender = mote;
                 found = true;
             }
@@ -133,7 +127,6 @@ public class MoteProbe {
         if(found) {
                 if(getGenericFeedbackLoop().isActive()) {
                     getGenericFeedbackLoop().adapt(sender, gateway);
-
                 }
         }
     }
