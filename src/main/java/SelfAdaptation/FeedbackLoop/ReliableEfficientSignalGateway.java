@@ -15,9 +15,7 @@ import java.util.stream.DoubleStream;
  * A class representing the signal based adaptation approach.
  */
 public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
-    private static Logger Reliable_Signal_LOGGER = Logger.getLogger(ReliableEfficientSignalGateway.class.getName());
-
-    /**
+     /**
      * Constructs a new instance of the signal based adaptation approach with a given quality of service.
      *
      * @param qualityOfService The quality of service for the received signal strength.
@@ -167,14 +165,7 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
                         checkMoteUID = transmission.getSender().getEUI();
                         if (checkMoteUID.equals(mote.getEUI()));
                         faultyMote = mote;
-                        Reliable_Signal_LOGGER.log(Level.INFO, "Faulty mote uid" + faultyMote.getEUI());
-                        Reliable_Signal_LOGGER.log(Level.INFO, "Faulty mote contents backupdata" + transmission.getContent());
                         setDataBackUP(transmission.getContent());
-                        //After data transfer the faulty mote is reset (Here an extensive research could be done
-                        // on Self-Healing to fix the faulty mote)
-                        // and then the information is sent to the Application server
-                        // and after that it is disbaled.
-                        //and then disbaled
                         faultyMote.reset();
                         dataGateway.informApplicationServer(faultyMote);
                         faultyMote.enable(false);
@@ -202,18 +193,11 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
                 //We choose the nearest mote and the one which has less request to handle.
                 if(chosenDistance.orElse(-1) <100 && selectWhichMoteToadapt.getNumberOfRequests()<10){
                     adjustPowerSetting(selectWhichMoteToadapt, getDataBackUP());
-                    informAdatedMoteStatus(selectWhichMoteToadapt,getDataBackUP());
-                }
+                    }
 
 
             }
         }
-    }
-
-    public void informAdatedMoteStatus(Mote selectWhichMoteToadapt, LoraWanPacket dataBackUP){
-        Reliable_Signal_LOGGER.log(Level.INFO,"Chosen mote to adapt" + selectWhichMoteToadapt.getEUI());
-        Reliable_Signal_LOGGER.log(Level.INFO,"Faulty mote contents backed up" + dataBackUP);
-        Reliable_Signal_LOGGER.log(Level.INFO,"Distance to Gateway" + getMoteProbe().getShortestDistanceToGateway(selectWhichMoteToadapt));
     }
 
 
