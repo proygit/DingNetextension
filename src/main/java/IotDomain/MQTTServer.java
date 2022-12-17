@@ -36,7 +36,7 @@ public class MQTTServer implements Serializable{
     public void publish(LinkedList<Byte> message, Long deviceEUI, Long applicationEUI, Long gatewayEUI){
         if(buffer.get(deviceEUI) != null){
             if(buffer.get(deviceEUI).contains(new BufferPair<>(message,gatewayEUI)) ){
-                if(buffer.get(deviceEUI).get(buffer.get(deviceEUI).lastIndexOf(new BufferPair<>(message,gatewayEUI))).getRight() == gatewayEUI){
+                if(buffer.get(deviceEUI).get(buffer.get(deviceEUI).lastIndexOf(new BufferPair<>(message,gatewayEUI))).getRight().equals(gatewayEUI)){
                     buffer.get(deviceEUI).add(new BufferPair<>(message,gatewayEUI));
                 }
             }
