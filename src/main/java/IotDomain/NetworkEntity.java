@@ -1,6 +1,8 @@
 package IotDomain;
 
 
+
+
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.Arrays;
@@ -13,7 +15,6 @@ import java.util.List;
  * An  abstract class representing an entity active in the LoraWan network
  */
 public abstract class NetworkEntity implements Serializable{
-
     /**
      *
      */
@@ -226,6 +227,7 @@ public abstract class NetworkEntity implements Serializable{
             if(!collision){
                 handleMacCommands(transmission.getContent());
                 OnReceive(transmission.getContent().getPayload(), transmission.getContent().getSenderEUI(), transmission.getContent().getDesignatedReceiverEUI());
+
             }
         }
 
@@ -401,7 +403,7 @@ public abstract class NetworkEntity implements Serializable{
      * @return true if the packets collide, false otherwise.
      */
     public Boolean collision(LoraTransmission a, LoraTransmission b){
-        if(a.getSpreadingFactor() == b.getSpreadingFactor()){
+        if(a.getSpreadingFactor().equals(b.getSpreadingFactor())){
 
             if(a.getTransmissionPower() - b.getTransmissionPower() < getTransmissionPowerThreshold()){
 
@@ -485,5 +487,4 @@ public abstract class NetworkEntity implements Serializable{
     public void enable(Boolean enabled) {
         this.enabled = enabled;
     }
-
 }
