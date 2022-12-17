@@ -7,8 +7,6 @@ import SelfAdaptation.Instrumentation.FeedbackLoopGatewayBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.OptionalDouble;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 
 /**
@@ -163,13 +161,13 @@ public class ReliableEfficientSignalGateway extends GenericFeedbackLoop {
                 receivedPower = transmission.getTransmissionPower();
                 if ((mote.getSensors().contains(MoteSensor.FAULTY) && (transmission.getSender() instanceof NetworkEntity))){
                         checkMoteUID = transmission.getSender().getEUI();
-                        if (checkMoteUID.equals(mote.getEUI()));
-                        faultyMote = mote;
-                        setDataBackUP(transmission.getContent());
-                        faultyMote.reset();
-                        dataGateway.informApplicationServer(faultyMote);
-                        faultyMote.enable(false);
-
+                        if (checkMoteUID.equals(mote.getEUI())){
+                            faultyMote = mote;
+                            setDataBackUP(transmission.getContent());
+                            faultyMote.reset();
+                            dataGateway.informApplicationServer(faultyMote);
+                            faultyMote.enable(false);
+                        }
                 }
             }
         }
