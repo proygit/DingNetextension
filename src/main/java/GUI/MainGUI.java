@@ -63,6 +63,7 @@ import java.awt.image.FilteredImageSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.*;
 
@@ -163,7 +164,6 @@ public class MainGUI extends JFrame {
 
         ReliableEfficientSignalGateway reliableEfficientSignalGateway = new ReliableEfficientSignalGateway(QoS);
         algorithms.add(reliableEfficientSignalGateway);
-
 
         ReliableEfficientDistanceGateway reliableEfficientDistanceGateway = new ReliableEfficientDistanceGateway();
         algorithms.add(reliableEfficientDistanceGateway);
@@ -299,7 +299,7 @@ public class MainGUI extends JFrame {
                             Integer yPos = Integer.valueOf(location.getElementsByTagName("yPos").item(0).getTextContent());
                             Integer transmissionPower = Integer.valueOf(gatewayNode.getElementsByTagName("transmissionPower").item(0).getTextContent());
                             Integer spreadingFactor = Integer.valueOf(gatewayNode.getElementsByTagName("spreadingFactor").item(0).getTextContent());
-                            new Gateway(devEUI, xPos, yPos, simulation.getEnvironment(), transmissionPower, spreadingFactor, 12677987);
+                            new Gateway(devEUI, xPos, yPos, simulation.getEnvironment(), transmissionPower, spreadingFactor,12677987);
                         }
 
 
@@ -514,7 +514,11 @@ public class MainGUI extends JFrame {
         singleRunButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                simulation.singleRun(speedSlider.getValue());
+                try {
+                    simulation.singleRun(speedSlider.getValue());
+                } catch (NoSuchAlgorithmException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         adaptationComboBox.addActionListener(new ActionListener() {
