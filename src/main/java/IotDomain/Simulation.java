@@ -4,6 +4,7 @@ import GUI.MainGUI;
 import SelfAdaptation.FeedbackLoop.GenericFeedbackLoop;
 // 
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -102,7 +103,7 @@ public class Simulation implements Runnable {
      * A method for running a single run with visualisation.
      * @param speed
      */
-    public void singleRun(Integer speed) {
+    public void singleRun(Integer speed) throws NoSuchAlgorithmException {
         //Check if a mote can participate in this run.
         for(Mote mote: getEnvironment().getMotes()){
             Double activityProbability;
@@ -251,7 +252,11 @@ public class Simulation implements Runnable {
                                     if (mote.shouldSend()) {
                                         LinkedList<Byte> data = new LinkedList<>();
                                         for (MoteSensor sensor : mote.getSensors()) {
-                                            data.add(sensor.getValue(mote.getXPos(), mote.getYPos(), getEnvironment().getTime()));
+                                            try {
+                                                data.add(sensor.getValue(mote.getXPos(), mote.getYPos(), getEnvironment().getTime()));
+                                            } catch (NoSuchAlgorithmException e) {
+                                                throw new RuntimeException(e);
+                                            }
                                         }
                                         Byte[] dataByte = new Byte[data.toArray().length];
                                         data.toArray(dataByte);
