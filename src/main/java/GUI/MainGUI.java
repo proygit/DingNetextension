@@ -64,6 +64,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.*;
 
@@ -508,7 +509,11 @@ public class MainGUI extends JFrame {
         regionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setApplicationGraphs(Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), simulation.getEnvironment());
+                try {
+                    setApplicationGraphs(Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), simulation.getEnvironment());
+                } catch (NoSuchAlgorithmException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         singleRunButton.addActionListener(new ActionListener() {
@@ -1752,7 +1757,7 @@ public class MainGUI extends JFrame {
 
     }
 
-    public void setApplicationGraphs(int index) {
+    public void setApplicationGraphs(int index) throws NoSuchAlgorithmException {
         moteApplicationLabel.setText("Mote " + (index + 1));
         // update particulate matter field
         particulateMatterPanel.removeAll();
@@ -1776,7 +1781,7 @@ public class MainGUI extends JFrame {
         ozonePanel.revalidate();
     }
 
-    public void setApplicationGraphs(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) {
+    public void setApplicationGraphs(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) throws NoSuchAlgorithmException {
         moteApplicationLabel.setText("Region 1");
         // update particulate matter field
         particulateMatterPanel.removeAll();
@@ -1810,8 +1815,8 @@ public class MainGUI extends JFrame {
         ozonePanel.revalidate();
     }
 
-    private static Double particulateMatter(double x, double y) {
-        Random random = new Random();
+    private static Double particulateMatter(double x, double y) throws NoSuchAlgorithmException {
+        Random random = SecureRandom.getInstanceStrong();
         if (x < 250 && y < 250)
             return (double) 97 + (x + y) / 250 + 0.3 * random.nextGaussian();
         else if (x < 750 && y < 750)
@@ -1822,7 +1827,7 @@ public class MainGUI extends JFrame {
             return 85 + (x + y) / 200 + 0.1 * random.nextGaussian();
     }
 
-    private ChartPanel generateParticulateMatterGraph(Mote mote) {
+    private ChartPanel generateParticulateMatterGraph(Mote mote) throws NoSuchAlgorithmException {
 
         XYSeriesCollection dataParticulateMatter = new XYSeriesCollection();
         int i = 0;
@@ -1946,7 +1951,7 @@ public class MainGUI extends JFrame {
 
     }
 
-    private Pair<JPanel, JComponent> generateParticulateMatterGraph(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) {
+    private Pair<JPanel, JComponent> generateParticulateMatterGraph(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) throws NoSuchAlgorithmException {
 
         DefaultXYZDataset dataParticulateMatter = new DefaultXYZDataset();
         HashMap<Pair<Integer, Integer>, LinkedList<Double>> seriesParticulateMatterList = new HashMap<>();
@@ -2000,8 +2005,8 @@ public class MainGUI extends JFrame {
 
     }
 
-    private static Double carbonDioxide(double x, double y) {
-        Random random = new Random();
+    private static Double carbonDioxide(double x, double y) throws NoSuchAlgorithmException {
+        Random random = SecureRandom.getInstanceStrong();
         if (x < 200 && y < 230)
             return (double) 97 - 20 + (x + y) / 250 + 0.3 * random.nextGaussian();
         else if (x < 1000 && y < 1000)
@@ -2012,7 +2017,7 @@ public class MainGUI extends JFrame {
             return 85 - 17.5 + (x + y) / 200 + 0.1 * random.nextGaussian();
     }
 
-    private ChartPanel generateCarbonDioxideGraph(Mote mote) {
+    private ChartPanel generateCarbonDioxideGraph(Mote mote) throws NoSuchAlgorithmException {
         XYSeriesCollection dataCarbonDioxide = new XYSeriesCollection();
         int i = 0;
 
@@ -2042,7 +2047,7 @@ public class MainGUI extends JFrame {
         return new ChartPanel(spreadingFactorChartMote);
     }
 
-    private Pair<JPanel, JComponent> generateCarbonDioxideGraph(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) {
+    private Pair<JPanel, JComponent> generateCarbonDioxideGraph(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) throws NoSuchAlgorithmException {
 
         DefaultXYZDataset dataCarbonDioxide = new DefaultXYZDataset();
         HashMap<Pair<Integer, Integer>, LinkedList<Double>> seriesCarbonDioxideList = new HashMap<>();
@@ -2095,8 +2100,8 @@ public class MainGUI extends JFrame {
 
     }
 
-    private static Double soot(double x, double y) {
-        Random random = new Random();
+    private static Double soot(double x, double y) throws NoSuchAlgorithmException {
+        Random random =SecureRandom.getInstanceStrong();
         if (x < 210 && y < 230)
             return (double) 97 - 10 + (x + y) / 250 + 0.3 * random.nextGaussian();
         else if (x < 1100 && y < 1100)
@@ -2107,7 +2112,7 @@ public class MainGUI extends JFrame {
             return 85 - 2 + (x + y) / 200 + 0.1 * random.nextGaussian();
     }
 
-    private ChartPanel generateSootGraph(Mote mote) {
+    private ChartPanel generateSootGraph(Mote mote) throws NoSuchAlgorithmException {
         XYSeriesCollection dataSoot = new XYSeriesCollection();
         int i = 0;
         XYSeries seriesSoot = new XYSeries("Soot");
@@ -2136,7 +2141,7 @@ public class MainGUI extends JFrame {
         return new ChartPanel(sootChart);
     }
 
-    private Pair<JPanel, JComponent> generateSootGraph(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) {
+    private Pair<JPanel, JComponent> generateSootGraph(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) throws NoSuchAlgorithmException {
 
         DefaultXYZDataset dataSoot = new DefaultXYZDataset();
         HashMap<Pair<Integer, Integer>, LinkedList<Double>> seriesSootList = new HashMap<>();
@@ -2189,8 +2194,8 @@ public class MainGUI extends JFrame {
 
     }
 
-    private static Double ozone(double x, double y) {
-        Random random = new Random();
+    private static Double ozone(double x, double y) throws NoSuchAlgorithmException {
+        Random random = SecureRandom.getInstanceStrong();
         if (x < 200 && y < 200)
             return (double) 97 - 30 + (x + y) / 250 + 0.3 * random.nextGaussian();
         else if (x < 1000 && y < 1000)
@@ -2201,7 +2206,7 @@ public class MainGUI extends JFrame {
             return 85 - 24 + (x + y) / 200 + 0.1 * random.nextGaussian();
     }
 
-    private ChartPanel generateOzoneGraph(Mote mote) {
+    private ChartPanel generateOzoneGraph(Mote mote) throws NoSuchAlgorithmException {
         XYSeriesCollection dataOzone = new XYSeriesCollection();
         int i = 0;
         XYSeries seriesOzone = new XYSeries("Ozone");
@@ -2230,7 +2235,7 @@ public class MainGUI extends JFrame {
         return new ChartPanel(ozoneChart);
     }
 
-    private Pair<JPanel, JComponent> generateOzoneGraph(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) {
+    private Pair<JPanel, JComponent> generateOzoneGraph(Integer xBase, Integer yBase, Integer xSize, Integer ySize, Environment environment) throws NoSuchAlgorithmException {
 
         DefaultXYZDataset dataOzone = new DefaultXYZDataset();
         HashMap<Pair<Integer, Integer>, LinkedList<Double>> seriesOzoneList = new HashMap<>();
