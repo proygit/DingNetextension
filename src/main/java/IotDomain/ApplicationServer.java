@@ -42,7 +42,7 @@ public class ApplicationServer extends UserApplication implements Serializable {
     }
 
     public static void takeAction(Mote mote) {
-        LOGGER.log(Level.INFO,"Application Server takes action on Faulty mote  : " + mote.getEUI());
+        LOGGER.log(Level.FINE,"Application Server takes action on Faulty mote  : " + mote.getEUI());
 
     }
     public static void addSubscription(Gateway gateway) {
