@@ -4,6 +4,7 @@ package IotDomain;
 import SelfAdaptation.Instrumentation.MoteProbe;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
 /**
  * A class representing a gateway in the network.
  */
-public class Gateway extends NetworkEntity implements Runnable {
+public class Gateway extends NetworkEntity implements Runnable, Serializable {
 
     private LinkedList<MoteProbe> subscribedMoteProbes;
     private static Logger LOGGER = Logger.getLogger(Gateway.class.getName());
@@ -91,7 +92,7 @@ public class Gateway extends NetworkEntity implements Runnable {
 
     }
 
-    public void informApplicationServer(Mote mote) {
+    public static void informApplicationServer(Mote mote) {
         applicationServer.takeAction(mote);
     }
 
@@ -107,7 +108,8 @@ public class Gateway extends NetworkEntity implements Runnable {
                 MoteProbe moteProbe = getSubscribedMoteProbes().get(i);
                 LOGGER.log(Level.INFO, "Send a ping to Motes"+ moteProbe);
             } catch (InterruptedException e) {
-                LOGGER.log(Level.INFO, "Host cant be reached");
+                LOGGER.log(Level.WARNING, "Host cant be reached");
+                Thread.currentThread().interrupt();
                 return;
             }
         }
