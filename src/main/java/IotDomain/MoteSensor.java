@@ -2,6 +2,7 @@ package IotDomain;
 
 import SensorDataGenerators.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalTime;
 
 /**
@@ -17,7 +18,7 @@ public enum MoteSensor {
 
     private SensorDataGenerator sensorDataGenerator;
 
-    public Byte getValue(Integer xpos, Integer ypos, LocalTime time){
+    public Byte getValue(Integer xpos, Integer ypos, LocalTime time) throws NoSuchAlgorithmException {
         return sensorDataGenerator.generateData(xpos,ypos,time);
     }
 }
