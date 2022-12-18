@@ -17,12 +17,11 @@ import java.util.logging.Logger;
  * A class representing a gateway in the network.
  */
 public class Gateway extends NetworkEntity implements Runnable, Serializable {
-
-    private LinkedList<MoteProbe> subscribedMoteProbes;
+    private static final long serialVersionUID = 1L;
+    private transient LinkedList<MoteProbe> subscribedMoteProbes;
     private static Logger LOGGER = Logger.getLogger(Gateway.class.getName());
-    static ApplicationServer applicationServer;
-    Thread task;
-    Timer timer;
+    private transient Thread  task;
+    private transient Timer timer;
 
     /**
      * A construtor creating a gateway with a given xPos, yPos, environment and transmission power.
@@ -38,7 +37,7 @@ public class Gateway extends NetworkEntity implements Runnable, Serializable {
         super(gatewayEUI, xPos, yPos, environment, transmissionPower, SF, 1.0, Double.valueOf(12677987));
         environment.addGateway(this);
         subscribedMoteProbes = new LinkedList<>();
-        applicationServer.addSubscription(this);
+        ApplicationServer.addSubscription(this);
         start();
 
     }
@@ -75,25 +74,9 @@ public class Gateway extends NetworkEntity implements Runnable, Serializable {
 
     }
 
-    /**
-     * Can be used in real world where Motes have Id(Internet ip address) and not String UID
-     * @param ipAddress
-     * @throws UnknownHostException
-     * @throws IOException
-     */
-    public void sendPingRequest(String ipAddress)
-            throws UnknownHostException, IOException {
-        InetAddress checkMoteIP = InetAddress.getByName(ipAddress);
-        LOGGER.log(Level.INFO, "Send a ping to host" + ipAddress);
-        if (checkMoteIP.isReachable(5000))
-            LOGGER.log(Level.INFO, "Host is pinged");
-        else
-            LOGGER.log(Level.INFO, "Host cant be reached");
-
-    }
 
     public static void informApplicationServer(Mote mote) {
-        applicationServer.takeAction(mote);
+        ApplicationServer.takeAction(mote);
     }
 
     /**
@@ -106,7 +89,7 @@ public class Gateway extends NetworkEntity implements Runnable, Serializable {
             try {
                 Thread.sleep(1000);
                 MoteProbe moteProbe = getSubscribedMoteProbes().get(i);
-                LOGGER.log(Level.INFO, "Send a ping to Motes"+ moteProbe);
+                LOGGER.log(Level.FINE, "Send a ping to Motes"+ moteProbe);
             } catch (InterruptedException e) {
                 LOGGER.log(Level.WARNING, "Host cant be reached");
                 Thread.currentThread().interrupt();
@@ -114,7 +97,7 @@ public class Gateway extends NetworkEntity implements Runnable, Serializable {
             }
         }
 
-        LOGGER.log(Level.INFO, "Ping finished");
+        LOGGER.log(Level.FINE, "Ping finished");
         timer.cancel();
     }
 
