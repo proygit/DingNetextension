@@ -1,5 +1,7 @@
 package SensorDataGenerators;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalTime;
 import java.util.Random;
 
@@ -15,8 +17,8 @@ public class CarbonDioxideDataGenerator implements SensorDataGenerator {
      * @param time The time of the measurement.
      * @return A measurement of carbon dioxide at the given position and time.
      */
-    public Byte generateData(Integer x, Integer y, LocalTime time){
-        Random random = new Random();
+    public Byte generateData(Integer x, Integer y, LocalTime time) throws NoSuchAlgorithmException {
+        Random random = SecureRandom.getInstanceStrong();
         if(x<200&&y< 230)
             return (byte)Math.floorMod((int) Math.round(97-20+(x+y)/250 +0.3*random.nextGaussian()),255);
         else if(x<1000&&y< 1000)
